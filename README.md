@@ -1,2 +1,16 @@
 # Bayesian-Spatial
-C implementation of Bayesian Spatial Additive Hazard Model
+## C and R implementation of Bayesian Spatial Additive Hazard Model
+
+This model was developed by me during my Research work at University of Windsor.
+
+The full text of the Thesis with details about the model, theoretical background, and results of Simulations and application of the model to real data, can be found in the PDF file *Bayesian Spatial Additive Hazard Model*.
+
+The computationally heavy task of fitting the model was written in *C* and compiled into a shared library that can be used by *R* for data analysis.
+
+The *C* implementation uses multiple-precision data types from open-source libraries *MPFR* and *GMP*. These libraries allow to operate with numbers much closer to zero than it is allowed by the standard floating-point types of *R* and *C* languages, which is required by the model.
+
+Because of using *MPRF* and *GMP* libraries I had to implement some standard functions like CDF of Gamma distribution and Householder method of solving systems of linear equations, which are readily available only for standard floating-point data types and not for multiple-precision types.
+
+The source codes are available under the *./C-Codes* and *./R-Codes* directories.
+
+Data used in the Thesis for analysis is not included in the repository because of the copyright restrictions.
