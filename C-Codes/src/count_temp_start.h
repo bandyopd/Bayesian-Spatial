@@ -1,0 +1,23 @@
+#ifndef _COUNT_TEMP_START_H_INCLUDED_
+#define _COUNT_TEMP_START_H_INCLUDED_
+
+	#define COUNT_END_ROUTINE(NAME) NAME##_END
+	#define COUNT_END(NAME) COUNT_END_ROUTINE(NAME)
+
+	#define GET_NEXT_TEMP(TEMP_NAME) (TEMP_NAME) + NEXT_TEMP_INDEX
+	#define GET_NEXT_TEMP_PTR(TEMP_NAME) (TEMP_NAME)[NEXT_TEMP_INDEX]
+
+#endif
+
+#ifdef NEXT_TEMP_INDEX
+	#undef NEXT_TEMP_INDEX
+#endif
+#define NEXT_TEMP_INDEX __COUNTER__
+#ifdef PREV_END
+	#undef PREV_END
+#endif
+#define PREV_END -1
+#ifdef NPASS
+	#undef NPASS
+#endif
+#define NPASS 0
