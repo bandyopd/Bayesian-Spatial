@@ -3,7 +3,7 @@
 
 This model was developed by me during my Research work at University of Windsor.
 
-The full text of the Thesis with details about the model, theoretical background, and results of Simulations and application of the model to real data, can be found [here] (http://scholar.uwindsor.ca/etd/4965/).
+The full text of the Thesis with details about the model, theoretical background, and results of Simulations and application of the model to real data, can be downloaded here: [Bayesian Spatial Additive Hazard Model] (http://scholar.uwindsor.ca/etd/4965).
 
 The computationally heavy task of fitting the model was written in *C* and compiled into a shared library that can be used by *R* for data analysis.
 
