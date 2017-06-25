@@ -31,4 +31,4 @@ matr <- as.matrix(apply(regions, 1, function(a) {r <- rep(0,nfrail); r[a[!is.na(
 
 dyn_lib_name <- 'car_model.so'
                   
-run_model(do.gen=F,do.samp=T,do.analysis=T,do.plot=T,do.plot.real=F,do.cpo=F)
+run_model(do.samp=T,do.analysis=T,do.plot=T,do.plot.real=F,do.cpo=F)
