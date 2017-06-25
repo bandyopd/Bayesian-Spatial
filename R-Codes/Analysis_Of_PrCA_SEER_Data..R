@@ -1,4 +1,4 @@
-source('simulations.R')
+source('run_mod.R')
 
 dat <- read.table('dat/dat.txt',header=T,sep='\t')
 dat$region <- (dat$county-1)/2
@@ -29,4 +29,6 @@ regions <- regions[order(regions[,1]),]
 nfrail <- nrow(regions)
 matr <- as.matrix(apply(regions, 1, function(a) {r <- rep(0,nfrail); r[a[!is.na(a)]+1] <- 1; return(r)}))
 
-# run_model(do.gen=F,do.samp=T,do.analysis=T,do.plot=T,do.plot.real=F,do.cpo=F)
+dyn_lib_name <- 'car_model.so'
+                  
+run_model(do.gen=F,do.samp=T,do.analysis=T,do.plot=T,do.plot.real=F,do.cpo=F)
