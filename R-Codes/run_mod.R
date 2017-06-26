@@ -161,26 +161,10 @@ run_model <- function(do.samp=F, do.analysis=F, do.plot=F, do.plot.real=F, commo
 	# if do.plot=F then PDF files with Regression Function estimates will not be produced
 	if (do.plot) {
 		cat('Producing plots\n')
-		if (do.plot.real) {
-			plot_to_pdf(filename='baseline', real_fun=baseline_fun, quant=quant_bl, label='Baseline')
-			reg_fun_many <<- function(x,i) {
-				if (i==1) {
-					return(reg_fun_1(x))
-				} else if (i==2) {
-					return(reg_fun_2(x))
-				} else {
-					return(0*x)
-				}
-			}
-			plot_to_pdf_many(n=ncov, filename='regfun', real_fun_many = reg_fun_many, quant_list = quant_rf_list, label='Regression function',common_scale=common_scale)
-			
-			frail_fun_many <<- function(x,i) 0*x+fr[i]
-			plot_to_pdf_many(n=nfrail, filename='frail', real_fun_many = frail_fun_many, quant_list = quant_fr_list, label='Frailty',common_scale=common_scale)
-		} else {
-			plot_to_pdf(filename='baseline', quant=quant_bl, label='Baseline')
+		
+		plot_to_pdf(filename='baseline', quant=quant_bl, label='Baseline')
 			plot_to_pdf_many(n=ncov, filename='regfun', quant_list = quant_rf_list, label='Regression function',common_scale=common_scale)
 			plot_to_pdf_many(n=nfrail, filename='frail', quant_list = quant_fr_list, label='Frailty',common_scale=common_scale)
-		}
 		
 		
 	}
