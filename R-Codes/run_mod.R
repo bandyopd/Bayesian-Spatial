@@ -1,3 +1,4 @@
+# Calculate stepwise approximations of covariate functions 
 gen_data_stepwise_approx = function(x, fun) {
 	n = length(x);
 	xprev = c(0,x[-n]);
@@ -5,6 +6,7 @@ gen_data_stepwise_approx = function(x, fun) {
 	return (val);
 }
 
+# Calculate covariance matrix of CAR Frailties with first frailty equal to zero
 frailty_car_cov_matr_firstzero = function(adj_matr,var_param) {
 	n = dim(adj_matr)[1];
 	prec_matr = adj_matr[-1,-1]
@@ -14,6 +16,7 @@ frailty_car_cov_matr_firstzero = function(adj_matr,var_param) {
 	return(cov_matr)
 }
 
+# Calculate hazard based on input data (a wrapper for a C function)
 compute_hazard = function(baseline, covariates, regfun, frail, frail_tbl) {
 	nobs = dim(covariates)[1];
 	ncov = dim(covariates)[2];
@@ -24,6 +27,7 @@ compute_hazard = function(baseline, covariates, regfun, frail, frail_tbl) {
 	return(haz)
 }
 
+# Fit the model with CAR frailties (a wrapper for a C function)
 fit_car_model = function(niter, dat, times, covar, covlim, adj_matr, r0=sum(dat$event)/dim(dat)[1]/max(times), c0=0.001, alpha=0.01, beta=0.001) {
 	nobs = dim(covar)[1]
 	ncov = dim(covar)[2]
@@ -40,7 +44,7 @@ fit_car_model = function(niter, dat, times, covar, covlim, adj_matr, r0=sum(dat$
 	return(samp)
 }
 
-
+# Create a PDF file containing a Regression Function plot. If "real function" is available (as in case of simulations), it is plotted as well
 plot_to_pdf <- function(prefix='',filename, real_fun, quant, label, ylim, ...){
 	pdf(paste0('img/',prefix,filename,'_',as.integer(nobs),'-',as.integer(ntimes_samp),'-',as.integer(niter),'.pdf'))
 	if (missing(ylim)){
@@ -67,6 +71,7 @@ plot_to_pdf <- function(prefix='',filename, real_fun, quant, label, ylim, ...){
 	dev.off()
 }
 
+# Create multiple PDF files with Regression Function plots for different variables
 plot_to_pdf_many <- function(n, prefix='', filename, real_fun_many, quant_list, label, ylim, common_scale=TRUE, ...) {
 	if (missing(ylim)){
 		ylim <- range(unlist(quant_list),na.rm=TRUE, finite=TRUE)
@@ -91,6 +96,7 @@ plot_to_pdf_many <- function(n, prefix='', filename, real_fun_many, quant_list, 
 	}
 }
 
+# Calculate the 2.5%, 50% and 97.5% quantiles for the MCMC sample (the input parameter "samp" is the result of MCMC algorithm)				    
 quant_for_samp <- function(samp) {
 	quant_val <- c(0.025,0.5,0.975)
 	if (is.array(samp)) {
@@ -101,8 +107,13 @@ quant_for_samp <- function(samp) {
 	return(quant) 
 }
 
-run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.real=F, common_scale=F, do.cpo=F, do.dic=F,do.loglik=do.cpo||do.dic, do.survival=F) {
+# Run and analyze the model, and produce the plots of the estimated Regression Functions					    
+run_model <- function(do.samp=F, do.analysis=F, do.plot=F, do.plot.real=F, common_scale=F, do.cpo=F, do.dic=F,do.loglik=do.cpo||do.dic, do.survival=F) {
 	dyn.load(dyn_lib_name)
+	# MCMC Sampling
+	# This step will only be performed if do.samp=T
+	# If do.samp=F then it's assumed that MCMC sampling have already been performed 
+	# and the function is called only to analyze the results
 	if (do.samp) {
 		cat('Sampling...\n')
 		times_samp <<- seq(0,tau,tau/ntimes_samp)[-1] # exclude 0
@@ -113,6 +124,10 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		covar_samp <<- gen_data_stepwise_approx(times_samp, covar_fun)
 		samp <<- fit_car_model(niter, dat, times_samp, covar_samp, covlim, matr)
 	}
+					 
+	# Analysis of MCMC sample (calculating quantile estimates based on the sample)
+	# This step will only be performed if do.analysis=T
+	# if do.analysis=F, this step will be assumed to have already been performed earlier and will be skipped
 	if (do.analysis) {
 		cat('Analysing\n')
 		if (nburnin==0) {
@@ -140,6 +155,10 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		}
 		
 	}
+	# Plotting the Regression Function estimates
+	# This step will be performed only if do.plot=T
+	# The plots will be saved to PDF files				 
+	# if do.plot=F then PDF files with Regression Function estimates will not be produced
 	if (do.plot) {
 		cat('Producing plots\n')
 		if (do.plot.real) {
@@ -165,6 +184,10 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		
 		
 	}
+	# Calculating Log-Likelihood (required for calculating Bayesian Model Comparison Criteria CPO and DIC				 
+	# This step will be performed only if do.loglik=T
+	# Use do.loglik=F if log-likelihood has already been calculated or calculation of CPO and DIC is not required
+	# NOTE: This step is computationally heavy, so it's recommended you set do.loglik=F if you don't need it calculated				 
 	if (do.loglik) {
 		cat('Computing likelihood\n')
 		ev_int <<- sapply(dat$time[dat$event==1], function(t) min(which(times_samp>=t)))
@@ -191,6 +214,7 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		haz_of_mean <<- compute_hazard(bl_mean, covar_samp, rf_mean, fr_mean, dat$region)
 		loglik_of_mean <<- loglik_marginal(haz_of_mean, event_matr, atrisk_times)
 	}
+	# Calculate CPO criterion value			       
 	if (do.cpo) {
 		cat('Computing CPO\n')
 		cpo_terms <<- 1/exp(loglik)
@@ -198,6 +222,7 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		lcpo <<- sum(log(cpo))	
 		write(lcpo, file = paste0('out/lcpo_',as.integer(ntimes_samp),'_',as.integer(niter),'.txt'))
 	}
+	# Calculate DIC cretetion value			       
 	if (do.dic) {
 		cat('Computing DIC\n')
 		dev <<- -2*apply(loglik, 1, mean)
@@ -207,6 +232,7 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 		dic <<- dev_sum + npar_eff
 		write(c(dic,npar_eff), file = paste0('out/dic_',as.integer(ntimes_samp),'_',as.integer(niter),'.txt'))
 	}
+	# Plot a "median" Survival Function, i.e. Survival Function for an individual with median values of all covariates			       
 	if (do.survival) {
 		cat('Computing survival\n')
 		bl_median <<- quant_bl[,'50%']
@@ -241,11 +267,12 @@ run_model <- function(do.gen=F, do.samp=F, do.analysis=F, do.plot=F, do.plot.rea
 	dyn.unload(dyn_lib_name)
 }
 
+# Calculate medians of all columns in a matrix					      
 colMedians <- function(matr) {
 	apply(matr,2,median)
 }
 
-
+# Calculate marginal log-likelihood 
 loglik_marginal <- function(haz,ev,ar_time) {
 	loghaz <- apply(log(haz)*ev,1,sum)
 	loglik <- loghaz-apply(haz*ar_time,1,sum)
