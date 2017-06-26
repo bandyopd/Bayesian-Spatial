@@ -28,7 +28,7 @@ The *C* code uses functions from three open-source libraries that have to be dow
 
 Once the above listed libraries have been downloaded, you should compile *./C-Codes/car_model.c* into a shared library (you will need to link the open source libraries and all the codes from *./C-Codes/src* to the *car_model.c* during compilation). You might also need to specify the location of the header file *R.h* on your system (usually within the *R* home directory under *include*, and might need to be installed if it didn't come with your distribution of *R*).
 
-Once the shared library is created, the C functions can be accessed from R (see *./R-Codes/simulations.R*). The main function in *simulations.R* is *run_model* that has various parameters specifying the actions to be performed (the meaning of the function parameters can be found in the commentaries within the code). 
+Once the shared library is created, the C functions can be accessed from R (see *./R-Codes/run_mod.R*). The main function in *run_mod.R* is *run_model* that has various parameters specifying the actions to be performed (the meaning of the function parameters can be found in the commentaries within the code). 
 
 The function expects several input variables to be defined:
 - *dyn_lib_name* - the name of (and/or path to) the dynamic (shared) library containing the compiled *C* functions
@@ -41,3 +41,15 @@ The function expects several input variables to be defined:
 - *covlim* - an array of ranges of admissible values for covariats
 - *ntimes_samp* - the number of time intervals considered in the model (for MCMC sampling); the time intervals are assumed to be equidistant; note that for the purpose of fitting a model, the covariate functions defined above will be approximated by piecewise constant functions on the time intervals defined by the constant *ntimes_samp* which in general are different from the intervals defined by the vector *times*
 - *matr* - the adjustment matrix of spacial regions
+
+The program *./R-Codes/Analysis_Of_PrCA_SEER_Data.R* demonstrates how the model can be applied to real data. The data used in this program is the SEER Prostate Cancer data described in the Thesis. As was already mentioned before, the data itself is not included in this repository due to copyright restrictions, however the counties adjustment data used in the program can be found in *./data/counties.txt*
+
+After the model is run, the sample produced by the MCMC algorithm will be saved in the following variables:
+- *samp_bl* - sample for baseline hazard: rows represent different sample iterations, columns represent different time points
+- *samp_rf* - a list of samples for regression functions (each element of the list is a matrix of values, representing a sample for one variable: rows represent different sample iterations, columns represent different time points)
+- *samp_fr* - sample for frailties (each element of the list is a matrix of values, representing a sample for one frailty: rows represent different sample iterations, columns represent different time points)
+
+Estimated quantiles are stored in the following variables:
+- *quant_bl* - quantiles for baseline hazard: rows represent 2.5%, 50% and 97.5% quantiles, columns represent different time points 
+- *quant_rf_list* - a list of quantiles for regressions functions (each element of the list is a matrix of values: rows represent 2.5%, 50% and 97.5% quantiles, columns represent different time points)
+- *quant_fr_list* - a list of quantiles for frailties (each element of the list is a matrix of values: rows represent 2.5%, 50% and 97.5% quantiles, columns represent different time points)
