@@ -1,5 +1,5 @@
-# Bayesian-Spatial
-## C and R implementation of Bayesian Spatial Additive Hazard Model
+# Bayesian Spatial Additive Hazard Model
+## General Description
 
 This model was developed by me and my supervisors during my Research work at University of Windsor.
 
@@ -17,7 +17,7 @@ Because of using multiple-precision data types from the *MPRF* and *GMP* librari
 
 Data used in the Thesis for analysis is not included in the repository because of the copyright restrictions, however we include the dataset representing the adjustment structure of the counties in Louisiana. The first value in each row identifies the county, and the rest of the values list all counties adjucent to this county. This dataset has been created manually based on the map of the state Louisiana.
 
-# Using Codes
+## Using the Codes
 
 The simulations and data analysis for the research have been done in *R*, while the computational part of the model have been coded in *C*. This has been achieved through compiling *C* codes into a shared library that can be loaded from *R*.
  
