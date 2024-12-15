@@ -15,7 +15,7 @@ The *C* implementation uses multiple-precision data types from open-source libra
 
 Because of using multiple-precision data types from the *MPRF* and *GMP* libraries, we had to implement some standard functions like CDF of Gamma distribution and Householder method for solving systems of linear equations, which are readily available only for standard floating-point data types and not for multiple-precision types. While implementing these functions, we used the codes from the open-source *GSL* library as a point of reference.
 
-Data used in the Thesis for analysis is not included in the repository because of the copyright restrictions, however we include the dataset representing the adjustment structure of the counties in Louisiana. The first value in each row identifies the county, and the rest of the values list all counties adjucent to this county. This dataset has been created manually based on the map of the state Louisiana.
+Data used in the Thesis for analysis is not included in the repository because of the copyright restrictions, however we include the dataset representing the adjustment structure of the counties in Louisiana. The first value in each row identifies the county, and the rest of the values list all counties adjacent to this county. This dataset has been created manually based on the map of the state Louisiana.
 
 ## Using the Codes
 
